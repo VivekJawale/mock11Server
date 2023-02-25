@@ -57,13 +57,26 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/getprofile", async (req, res) => {
-    let token = req.headers.authorization.split(' ')[1];
-    let dectoken = jwt.verify(token, SCECRET_KEY);
-    let user = await User.findOne({ email: dectoken.email })
+    const _id = req.body._id;
+    const user = await User.find({ _id: _id })
     if (user) {
         return res.status(200).send(user);
     } else {
         return res.status(404).send('User not found');
+    }
+})
+
+app.patch("/edit", async (req, res) => {
+    const _id = req.body._id;
+    try {
+        const user = await User.findByIdAndUpdate({ _id: _id }, req.body);
+        if (user) {
+            return res.status(200).send(`Updated user profile`);
+        } else {
+            return res.status(404).send(`User profile not found`);
+        }
+    } catch (error) {
+        return res.status(404).send("Unable to edit profile data");
     }
 })
 
