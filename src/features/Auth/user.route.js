@@ -57,8 +57,10 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/getprofile", async (req, res) => {
-    const _id = req.body._id;
-    const user = await User.find({ _id: _id })
+    const token = req.headers.token
+    const decodedToken = jwt.verify(token, SCECRET_KEY);
+    const Id = decodedToken.user;
+    const user = await User.findById(Id)
     if (user) {
         return res.status(200).send(user);
     } else {
